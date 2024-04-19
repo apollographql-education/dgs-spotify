@@ -16,7 +16,11 @@ public class MappedPlaylist extends Playlist {
     public void mapTracks(JsonNode tracks) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode items = tracks.get("items");
-        List<MappedTrack> trackList = mapper.readValue(items.traverse(), new TypeReference<>() {});
-        this.setTracks(trackList.stream().map(MappedTrack::getTrack).toList());
+
+        if (items != null) {
+            TrackCollection trackList = mapper.readValue(tracks.traverse(), new TypeReference<TrackCollection>() {
+            });
+            this.setTracks(trackList.getTracks());
+        }
     }
 }
