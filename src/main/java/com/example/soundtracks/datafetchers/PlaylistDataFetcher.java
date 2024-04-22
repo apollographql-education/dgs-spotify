@@ -10,6 +10,8 @@ import com.netflix.graphql.dgs.DgsQuery;
 import com.netflix.graphql.dgs.DgsMutation;
 import com.netflix.graphql.dgs.DgsData;
 import com.netflix.graphql.dgs.DgsDataFetchingEnvironment;
+import com.example.soundtracks.generated.types.Track;
+import com.netflix.graphql.dgs.DgsDataFetchingEnvironment;
 
 import java.util.List;
 
@@ -34,6 +36,19 @@ public class PlaylistDataFetcher {
     @DgsQuery
     public MappedPlaylist playlist(@InputArgument String id) {
         return spotifyClient.playlistRequest(id);
+    }
+
+    @DgsData(parentType = "Playlist")
+    public List<Track> tracks(DgsDataFetchingEnvironment dfe) {
+        MappedPlaylist playlist = dfe.getSource();
+        String id = playlist.getId();
+        List<Track> tracks = playlist.getTracks();
+
+        if (tracks != null) {
+            return tracks;
+        } else {
+            return spotifyClient.tracksRequest(id);
+        }
     }
 
     @DgsMutation
